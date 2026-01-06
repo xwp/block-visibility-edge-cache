@@ -15,7 +15,7 @@ This plugin solves this by:
 
 ## Requirements
 
-- PHP 8.0+
+- PHP 8.4+
 - WordPress 5.8+
 - [Block Visibility](https://wordpress.org/plugins/block-visibility/) plugin.
 - [Action Scheduler](https://actionscheduler.org/) (included in this plugin's vendor directory or via other plugins like WooCommerce).
