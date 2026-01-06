@@ -1,0 +1,39 @@
+{
+  "name": "xwp/block-visibility-edge-cache",
+  "description": "Handles edge cache invalidation for blocks with time-based visibility settings.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": "^8.4",
+    "woocommerce/action-scheduler": "^3.9"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6",
+    "phpstan/phpstan": "^1.10",
+    "szepeviktor/phpstan-wordpress": "^1.3",
+    "automattic/vipwpcs": "^3.0",
+    "brain/monkey": "^2.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "XWP\\BlockVisibilityEdgeCache\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "lint": "phpcs",
+    "lint:fix": "phpcbf",
+    "phpstan": "phpstan analyze",
+    "phpunit": "phpunit",
+    "test": [
+      "@phpunit",
+      "@phpstan",
+      "@lint"
+    ]
+  }
+}
