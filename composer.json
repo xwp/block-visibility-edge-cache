@@ -31,9 +31,9 @@
     "phpstan": "phpstan analyze",
     "phpunit": "phpunit",
     "test": [
-      "@phpunit",
+      "@lint",
       "@phpstan",
-      "@lint"
+      "@phpunit"
     ]
   }
 }

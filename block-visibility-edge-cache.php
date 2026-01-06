@@ -6,6 +6,7 @@
  * Author: XWP
  * Text Domain: block-visibility-edge-cache
  * Requires PHP: 8.4
+ * Requires Plugins: block-visibility
  *
  * @package XWP\BlockVisibilityEdgeCache
  */
