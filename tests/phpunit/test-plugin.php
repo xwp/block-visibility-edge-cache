@@ -2,23 +2,10 @@
 
 namespace XWP\BlockVisibilityEdgeCache\Tests;
 
-use PHPUnit\Framework\TestCase;
-use Brain\Monkey;
-use Brain\Monkey\Functions;
 use XWP\BlockVisibilityEdgeCache\Plugin;
 use XWP\BlockVisibilityEdgeCache\Schedule_Calculator;
-use WP_Post;
 
-class Test_Plugin extends TestCase {
-	protected function setUp(): void {
-		parent::setUp();
-		Monkey\setUp();
-	}
-
-	protected function tearDown(): void {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
+class Test_Plugin extends \WP_UnitTestCase {
 
 	public function data_get_schedules_from_blocks(): array {
 		return [
@@ -36,7 +23,7 @@ class Test_Plugin extends TestCase {
 												'schedules' => [
 													[
 														'enable' => true,
-														'start'  => '2025-12-01 10:00:00',
+														'start'  => '2099-12-01 10:00:00',
 													],
 												],
 											],
@@ -49,7 +36,7 @@ class Test_Plugin extends TestCase {
 					],
 				],
 				1,
-				'2025-12-01 10:00:00',
+				'2099-12-01 10:00:00',
 			],
 		];
 	}
@@ -63,40 +50,64 @@ class Test_Plugin extends TestCase {
 	}
 
 	public function test_schedule_cache_purge_on_publish() {
-		$post_id = 123;
-		Functions\expect( 'get_post' )->andReturn( new WP_Post( [
-			'ID'           => $post_id,
+		$post_id = self::factory()->post->create( [
 			'post_status'  => 'publish',
-			'post_content' => ''
-		] ) );
-		Functions\expect( 'parse_blocks' )->andReturn( [] );
-		Functions\expect( 'as_unschedule_all_actions' )->once();
+			'post_content' => '<!-- wp:group {"blockVisibility":{"controlSets":[{"enable":true,"controls":{"dateTime":{"schedules":[{"enable":true,"start":"2099-06-01 10:00:00"}]}}}]}} --><div class="wp-block-group"></div><!-- /wp:group -->',
+		] );
+
 		$feature = new Plugin();
-		$feature->schedule_cache_purge_on_post_status_transition( 'publish', 'draft', new WP_Post( [ 'ID' => $post_id ] ) );
-		$this->assertTrue( true );
+		$post    = get_post( $post_id );
+		$feature->schedule_cache_purge_on_post_status_transition( 'publish', 'draft', $post );
+
+		$actions = as_get_scheduled_actions( [
+			'hook'   => 'xwp_block_visibility_purge_cache',
+			'args'   => [ 'post_id' => $post_id ],
+			'status' => \ActionScheduler_Store::STATUS_PENDING,
+		] );
+
+		$this->assertNotEmpty( $actions, 'Expected at least one scheduled action for cache purge.' );
 	}
 
 	public function test_unschedule_cache_purge_on_trash() {
-		$post_id = 123;
-		Functions\expect( 'as_unschedule_all_actions' )->once();
+		$post_id = self::factory()->post->create( [
+			'post_status'  => 'publish',
+			'post_content' => '<!-- wp:group {"blockVisibility":{"controlSets":[{"enable":true,"controls":{"dateTime":{"schedules":[{"enable":true,"start":"2099-06-01 10:00:00"}]}}}]}} --><div class="wp-block-group"></div><!-- /wp:group -->',
+		] );
+
+		// First schedule an action.
 		$feature = new Plugin();
+		$post    = get_post( $post_id );
+		$feature->schedule_cache_purge_on_post_status_transition( 'publish', 'draft', $post );
+
+		// Now unschedule via delete.
 		$feature->unschedule_cache_purge_on_delete( $post_id );
-		$this->assertTrue( true );
+
+		$actions = as_get_scheduled_actions( [
+			'hook'   => 'xwp_block_visibility_purge_cache',
+			'args'   => [ 'post_id' => $post_id ],
+			'status' => \ActionScheduler_Store::STATUS_PENDING,
+		] );
+
+		$this->assertEmpty( $actions, 'Expected no scheduled actions after unschedule.' );
 	}
 
-	public function test_purge_post_cache_chains_to_next_timestamp() {
-		$post_id = 123;
-		Functions\expect( 'wpcom_vip_purge_edge_cache_for_post' )->once();
-		Functions\expect( 'do_action' )->once();
-		Functions\expect( 'get_post' )->andReturn( new WP_Post( [
-			'ID'           => $post_id,
+	public function test_purge_post_cache_fires_action() {
+		$post_id = self::factory()->post->create( [
 			'post_status'  => 'publish',
-			'post_content' => ''
-		] ) );
-		Functions\expect( 'parse_blocks' )->andReturn( [] );
+			'post_content' => '',
+		] );
+
+		$fired = false;
+		add_action( 'xwp_block_visibility_edge_cache_purged', function ( $id ) use ( &$fired, $post_id ) {
+			if ( $id === $post_id ) {
+				$fired = true;
+			}
+		} );
+
 		$feature = new Plugin();
 		$feature->purge_post_cache( $post_id );
-		$this->assertTrue( true );
+
+		$this->assertTrue( $fired, 'Expected xwp_block_visibility_edge_cache_purged action to fire.' );
 	}
 
 	public function test_filter_visibility_controls() {

@@ -1,0 +1,28 @@
+{
+	"core": "WordPress/WordPress#6.7",
+	"phpVersion": "8.4",
+	"port": 8891,
+	"testsPort": 8892,
+	"plugins": [
+		"https://downloads.wordpress.org/plugin/block-visibility.3.7.1.zip",
+		"."
+	],
+	"config": {
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true,
+		"WP_DEBUG_DISPLAY": true,
+		"SCRIPT_DEBUG": true
+	},
+	"mappings": {
+		"wp-content/plugins/block-visibility-edge-cache": "."
+	},
+	"env": {
+		"tests": {
+			"phpVersion": "8.4",
+			"config": {
+				"WP_DEBUG": true,
+				"WP_DEBUG_LOG": true
+			}
+		}
+	}
+}
