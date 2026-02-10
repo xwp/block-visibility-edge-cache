@@ -1,0 +1,29 @@
+{
+	"name": "block-visibility-edge-cache",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Handles edge cache invalidation for blocks with time-based visibility settings.",
+	"author": "XWP <engage@xwp.co>",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"wp-env": "wp-env",
+		"start": "wp-env start",
+		"stop": "wp-env stop",
+		"destroy": "wp-env destroy",
+		"clean": "wp-env clean",
+		"logs": "wp-env logs",
+		"test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/block-visibility-edge-cache vendor/bin/phpunit",
+		"test:php:watch": "npm run test:php -- --watch",
+		"lint:php": "composer lint",
+		"lint:php:fix": "composer lint:fix",
+		"phpstan": "composer phpstan",
+		"lint": "npm run lint:php",
+		"test": "npm run test:php"
+	},
+	"devDependencies": {
+		"@wordpress/env": "^10.0.0"
+	},
+	"engines": {
+		"node": ">=20.0.0"
+	}
+}
