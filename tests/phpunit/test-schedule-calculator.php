@@ -7,12 +7,11 @@
 
 namespace XWP\BlockVisibilityEdgeCache\Tests;
 
-use PHPUnit\Framework\TestCase;
 use XWP\BlockVisibilityEdgeCache\Schedule_Calculator;
 use DateTimeImmutable;
 use DateTimeZone;
 
-class Test_Schedule_Calculator extends TestCase {
+class Test_Schedule_Calculator extends \WP_UnitTestCase {
 
 	public function test_basic_future_timestamp() {
 		$now = new DateTimeImmutable( '2025-01-01 12:00:00', new DateTimeZone( 'UTC' ) );
