@@ -22,6 +22,12 @@ This plugin solves this by:
 
 ## Installation
 
+### Via Composer (Recommended)
+```bash
+composer require xwp/block-visibility-edge-cache
+```
+
+### Manual
 1. Upload the plugin folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Ensure the Block Visibility plugin is also active.
@@ -65,19 +71,23 @@ add_action( 'xwp_block_visibility_edge_cache_purged', function( $post_id ) {
 ### Installation
 ```bash
 composer install
+pnpm install
 ```
 
 ### Running Tests
-The project includes a comprehensive test suite using PHPUnit.
+The project includes a comprehensive test suite using PHPUnit via wp-env.
 ```bash
+# Start the WordPress environment
+pnpm wp-env start
+
 # Run PHPUnit tests
-composer test
+pnpm test:php
 
 # Run PHP Code Sniffer
 composer lint
 
 # Run PHPStan
-composer analyze
+composer phpstan
 ```
 
 ## License
